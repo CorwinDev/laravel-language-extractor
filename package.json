@@ -1,0 +1,12 @@
+{
+  "name": "laravel-language-extractor",
+  "version": "0.0.1",
+  "description": "Loops though laravel blade files and places it in json file",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "CorwinDev",
+  "license": "MIT",
+  "bin": "index.js"
+}
