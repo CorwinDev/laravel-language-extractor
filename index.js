@@ -13,7 +13,7 @@ var log = function (message, important) {
 }
 
 
-if(process.argv.includes('--help') || process.argv.includes('-h')) {
+if (process.argv.includes('--help') || process.argv.includes('-h')) {
     console.log('Usage: npx laravel-language-extractor [options]');
     console.log('Options:');
     console.log('  --default-file <file>  Specify the default file to write to. Defaults to lang/en.json');
@@ -25,9 +25,9 @@ if(process.argv.includes('--help') || process.argv.includes('-h')) {
     return;
 }
 var dir;
-if(process.argv.includes('--path')) {
+if (process.argv.includes('--path')) {
     var dir = process.argv[process.argv.indexOf('--path') + 1];
-    if(!dir) {
+    if (!dir) {
         log('You must specify a path to scan.', true);
         return;
     }
@@ -91,6 +91,7 @@ if (process.argv.includes('--default-file')) {
 const langDir = path.join(dir, '/lang');
 const langFiles = readDir(langDir);
 var filesUpdated = 0;
+var stringsAdded = 0;
 langFiles.forEach((file) => {
     // If the file isn't a .json file, skip it
     if (!file.endsWith('.json')) {
@@ -103,6 +104,7 @@ langFiles.forEach((file) => {
         // If the key doesn't exist in the existing language file, add it
         if (!existingLang[key]) {
             existingLang[key] = key;
+            stringsAdded++;
         }
     });
     // Sort the keys
@@ -113,4 +115,4 @@ langFiles.forEach((file) => {
     filesUpdated++;
 });
 
-log('Done, updated ' + filesUpdated + ' files.', true);
+log('Done, updated ' + filesUpdated + ' files with ' + stringsAdded + ' new strings.', true);
