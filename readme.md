@@ -20,4 +20,4 @@ npx laravel-language-extractor [options]
 | --- | --- | --- |
 | `--verbose` | Show verbose output | `false` |
 | `--silent` | Show no output | `false` |
-| `--theme <theme>` | Theme to use for output for [Laravel-Themer](https://github.com/qirolab/laravel-themer) | `default` |
+| `--theme <theme>` | Theme to use for output for [Laravel-Themer](https://github.com/qirolab/laravel-themer) |  |
