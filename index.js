@@ -13,8 +13,28 @@ var log = function (message, important) {
 }
 
 
+if(process.argv.includes('--help') || process.argv.includes('-h')) {
+    console.log('Usage: npx laravel-language-extractor [options]');
+    console.log('Options:');
+    console.log('  --default-file <file>  Specify the default file to write to. Defaults to lang/en.json');
+    console.log('  --path <path>          Specify the path to scan. Defaults to the current directory.');
+    console.log('  --silent               Don\'t output anything.');
+    console.log('  --verbose              Output everything.');
+    console.log('  --help                 Show this help message.');
+    console.log('  --theme <theme>        Specify the theme to scan. Defaults to the default theme.');
+    return;
+}
+var dir;
+if(process.argv.includes('--path')) {
+    var dir = process.argv[process.argv.indexOf('--path') + 1];
+    if(!dir) {
+        log('You must specify a path to scan.', true);
+        return;
+    }
+} else {
+    var dir = path.resolve();
+}
 
-const dir = path.resolve();
 log('Starting...')
 
 const readDir = (dir) => {
@@ -56,9 +76,16 @@ themeFiles.forEach((file) => {
 });
 lang = Object.keys(lang).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })).reduce((r, k) => (r[k] = lang[k], r), {});
 
-fs.writeFileSync(path.join(dir, '/lang/en.json'), JSON.stringify(lang, null, 4));
-
-log('Writing en.json file...')
+if (process.argv.includes('--default-file')) {
+    const defaultFile = process.argv[process.argv.indexOf('--default-file') + 1];
+    if (defaultFile) {
+        fs.writeFileSync(path.join(dir, defaultFile), JSON.stringify(lang, null, 4));
+        log('Writing ' + defaultFile + ' file...')
+    }
+} else {
+    fs.writeFileSync(path.join(dir, '/lang/en.json'), JSON.stringify(lang, null, 4));
+    log('Writing lang/en.json file...')
+}
 
 // Loop through all the files in the lang directory and if the file is outdated, update it
 const langDir = path.join(dir, '/lang');
@@ -67,10 +94,6 @@ var filesUpdated = 0;
 langFiles.forEach((file) => {
     // If the file isn't a .json file, skip it
     if (!file.endsWith('.json')) {
-        return;
-    }
-    // If the file is en.json, skip it
-    if (file.endsWith('en.json')) {
         return;
     }
     // Read the file
