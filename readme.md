@@ -1,5 +1,7 @@
 # laravel-language-extractor
 
+[![downloadsBadge](https://img.shields.io/npm/dt/laravel-language-extractor?style=for-the-badge)](https://npmjs.com/laravel-language-extractor)
+
 Extracts all language strings from a Laravel project and generates or updates a language file.
 
 ## Installation
