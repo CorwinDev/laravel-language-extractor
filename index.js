@@ -59,11 +59,15 @@ if (process.argv.includes('--theme')) {
 }
 
 const themeFiles = readDir(themeDir);
-var lang = require(dir + '/lang/en.json');
+var lang;
+try {
+    lang = require(dir + '/lang/en.json');
+} catch (e) {
+    lang = {};
+}
 log('Looping through theme files...')
 themeFiles.forEach((file) => {
-    file = file.replace(themeDir, '');
-    const fileContent = fs.readFileSync(path.join(themeDir, file), 'utf8');
+    const fileContent = fs.readFileSync(path.join(file), 'utf8');
     const matches = fileContent.match(/{{ __\('(.*?)'\) }}/g);
     if (matches) {
         matches.forEach((match) => {
@@ -74,6 +78,26 @@ themeFiles.forEach((file) => {
         });
     }
 });
+if (!process.argv.includes('--no-controllers')) {
+    var controllerDir = path.join(dir, '/app/Http/Controllers');
+    if (!controllerDir) return;
+    const controllerFiles = readDir(controllerDir);
+    log('Looping through controller files...')
+    controllerFiles.forEach((file) => {
+        const fileContent = fs.readFileSync(path.join(file), 'utf8');
+        // Match all the Lang::get() calls
+        const matches = fileContent.match(/Lang::get\('(.*?)'\)/g);
+        if (matches) {
+            matches.forEach((match) => {
+                const key = match.replace(/Lang::get\('(.*?)'\)/, '$1');
+                if (!lang[key]) {
+                    lang[key] = key;
+                }
+            });
+        }
+    });
+}
+
 lang = Object.keys(lang).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })).reduce((r, k) => (r[k] = lang[k], r), {});
 
 if (process.argv.includes('--default-file')) {
@@ -92,13 +116,24 @@ const langDir = path.join(dir, '/lang');
 const langFiles = readDir(langDir);
 var filesUpdated = 0;
 var stringsAdded = 0;
+var existingLang;
+
 langFiles.forEach((file) => {
     // If the file isn't a .json file, skip it
     if (!file.endsWith('.json')) {
         return;
     }
     // Read the file
-    existingLang = require(file);
+    try {
+        existingLang = require(file);
+    } catch (e) {
+        if (e.message.includes('Unexpected end of JSON input')) {
+            existingLang = {};
+        } else {
+            log('Error reading ' + file + ', skipping...', true)
+            return;
+        }
+    }
     // Loop through all the keys in the en.json file
     Object.keys(lang).forEach((key) => {
         // If the key doesn't exist in the existing language file, add it

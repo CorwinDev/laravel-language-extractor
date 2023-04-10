@@ -23,3 +23,4 @@ npx laravel-language-extractor [options]
 | `--theme <theme>` | Theme to use for output for [Laravel-Themer](https://github.com/qirolab/laravel-themer) |  |
 | `--path <path>` | Path to Laravel project | `.` |
 | `--default-file <file>` | Default language file to use | `lang/en.json` |
+| `--no-controllers` | Do not extract strings from controllers | `false` |
