@@ -68,10 +68,10 @@ try {
 log('Looping through theme files...')
 themeFiles.forEach((file) => {
     const fileContent = fs.readFileSync(path.join(file), 'utf8');
-    const matches = fileContent.match(/{{ __\('(.*?)'\) }}/g);
+    const matches = fileContent.match(/{{\s*__\(\s*(?:'|")(.*?)(?:'|")\s*\)\s*}}/g);
     if (matches) {
         matches.forEach((match) => {
-            const key = match.replace(/{{ __\('(.*?)'\) }}/, '$1');
+            const key = match.replace(/{{\s*__\(\s*(?:'|")(.*?)(?:'|")\s*\)\s*}}/g, '$1');
             if (!lang[key]) {
                 lang[key] = key;
             }
